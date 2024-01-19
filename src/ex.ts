@@ -34,26 +34,11 @@ function isVimOn() {
 	for (let ext of vscode.extensions.all) {
 		if (ext.id.includes('vim') && ext.isActive) {
 			isvimon = true;
-			// console.log("has active vim");
 			break;
 		}
 	}
 	return isvimon;
 }
-
-// async function ifVimOn() {
-// 	if (!useWithVim) {
-// 		return;
-// 	}
-// 	if (ccEnable && !csEnable && isVimOn()) {
-// 		try {
-// 			await switchIM(ChineseIM);
-// 			// console.log("switch on vim");
-// 		} catch (err) {
-// 			// out.error(`${err}`);
-// 		}
-// 	}
-// }
 
 /**
  * 获取配置信息。

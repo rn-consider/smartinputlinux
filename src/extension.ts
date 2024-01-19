@@ -2,41 +2,14 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { Ibus } from './input/ibus';
-const chineseCursorColor = '#00FF00'; // 设置中文光标颜色
-const englishCursorColor = '#FFFFFF'; // 设置英文光标颜色
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
+// 检查是否处在注释中
 function isCommentLine(text: string): boolean {
     text = text.trim(); // 获取当前行的文本，并去除前后的空白字符
-    return text.startsWith('//') || text.startsWith('/*') || text.startsWith('#') || text.startsWith('<!--') ;
+    return text.startsWith('*') || text.startsWith('//') || text.startsWith('/*') || text.startsWith('#') || text.startsWith('<!--') ;
 }
-// 判断是否安装了vim插件
-function isVimOn(): boolean {
-	let isvimon = false;
-	for (let ext of vscode.extensions.all) {
-		if (ext.id.includes('vim') && ext.isActive) {
-			isvimon = true;
-			break;
-		}
-	}
-	return isvimon;
-}
-// 用于改变光标颜色
-function setCursorColor(color: string) {
-    vscode.workspace.getConfiguration().update('workbench.colorCustomizations', {
-        'editorCursor.foreground': color
-    }, vscode.ConfigurationTarget.Global);
-}
-// 用于还原光标颜色
-function resetCursorColor() {
-    let colorCustomizations: any = vscode.workspace.getConfiguration('workbench').get('colorCustomizations');
-    if (colorCustomizations && typeof colorCustomizations === 'object' && 'editorCursor.foreground' in colorCustomizations) {
-        delete colorCustomizations['editorCursor.foreground'];
-        vscode.workspace.getConfiguration('workbench').update('colorCustomizations', colorCustomizations, vscode.ConfigurationTarget.Global);
-    } else {
-        vscode.workspace.getConfiguration('workbench').update('colorCustomizations', {}, vscode.ConfigurationTarget.Global);
-    }
-}
+// 判断vim是否处在插入模式
 /**
  * 获取配置信息。
  * 
@@ -49,28 +22,52 @@ function getConfiguration() {
 	// out.info('get configuration.');
 }
 export function activate(context: vscode.ExtensionContext) {
-    let ibus = new Ibus();
+    const config = vscode.workspace.getConfiguration('SmartIM');
+    const chineseCursorColor: string = config.get('chineseCursorColor') || '#00FF00'; // 如果没有获取到配置值，则使用默认值 '#00FF00'
+    const isWithVim: string = config.get('isWithVim') || 'true'; // 如果没有获取到配置值，则使用默认值 '#00FF00'
+    const englishCursorColor: string = config.get('englishCursorColor') || '#FFFFFF'; // 如果没有获取到配置值，则使用默认值 '#FFFFFF'
+    let ibus = new Ibus(chineseCursorColor, englishCursorColor);
     let inCommentLine = false; // 添加一个变量来跟踪当前是否在注释行中
-    // 注册事件监听器
-    vscode.window.onDidChangeTextEditorSelection((event) => {
-        let editor = event.textEditor;
-        let position = editor.selection.active; // 获取当前光标的位置
-        let line = editor.document.lineAt(position.line); // 获取当前行
-        let text = line.text;
-        let isNowInCommentLine = isCommentLine(text); // 检查当前是否在注释行中
-        if (isNowInCommentLine !== inCommentLine) { // 只有当状态发生改变时，才切换输入法
-            inCommentLine = isNowInCommentLine; // 更新状态
-            if (inCommentLine) {
-                vscode.window.showInformationMessage('当前光标在注释行中，切换为中文输入法!');
-                ibus.ChangeInputToChinese('pinyin');
-				setCursorColor(chineseCursorColor);
-            } else {
-                vscode.window.showInformationMessage('当前光标不在注释行中!');
-                ibus.ChangeInputToEnglish('xkb:us::eng');
-				setCursorColor(englishCursorColor);
+    //  如果使用vim
+    if(isWithVim === 'true') { 
+        context.subscriptions.push(vscode.window.onDidChangeTextEditorOptions(async (e: vscode.TextEditorOptionsChangeEvent) => {
+            if (e.options.cursorStyle === 2) {
+                ibus.SetEnglishCursorColor(); // 设置为英文输入法
             }
+        }));
+        // 如果处在vim insert下，那么根据行是否处在注释行中来判断是否切换输入法
+        vscode.window.onDidChangeTextEditorSelection(async (event) => {
+            if(event.textEditor.options.cursorStyle === 1) {
+                const line = event.selections[0].active.line;
+                const text = event.textEditor.document.lineAt(line).text;
+                let isNowInCommentLine = isCommentLine(text); // 检查当前是否在注释行中
+                if (isNowInCommentLine !== inCommentLine) { // 只有当状态发生改变时，才切换输入法
+                    inCommentLine = isNowInCommentLine; // 更新状态
+                    if (inCommentLine) {
+                        // vscode.window.showInformationMessage('当前光标在注释行中，切换为中文输入法!');
+                        ibus.ChangeInputToChinese('pinyin');
+                    } else {
+                        // vscode.window.showInformationMessage('当前光标不在注释行中!');
+                        ibus.ChangeInputToEnglish('xkb:us::eng');
+                    }
+                }
+                }
+            }
+        );
+    }
+   
+    // 窗口获得焦点时，切换为英文输入法，窗口失去焦点时切换为中文输入法
+    context.subscriptions.push(vscode.window.onDidChangeWindowState(async (state) => {
+        if (state.focused) {
+            // vscode.window.showInformationMessage('当前窗口获得焦点，切换为英文输入法!');
+            ibus.ChangeInputToEnglish('xkb:us::eng');
         }
-    });
+        else {
+            // vscode.window.showInformationMessage('当前窗口失去焦点，切换为中文输入法!');
+            ibus.ChangeInputToChinese('pinyin');
+        }
+    }));
+
 }
 // This method is called when your extension is deactivated
 export function deactivate() {}
