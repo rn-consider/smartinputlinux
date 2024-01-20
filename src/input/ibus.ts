@@ -21,16 +21,16 @@ export class Ibus {
     ChangeInputToChinese(input: string): void {        try {
             setCursorColor(this.chineseCursorColor); // 将 setCursorColor 放入回调函数中
         } catch (error) {
-            console.error(`设置光标颜色失败: ${error}`);
+            // console.error(`设置光标颜色失败: ${error}`);
         }
         exec(`/usr/bin/ibus engine ${input}`, (error, stdout, stderr) => {
             if (error) {
-                console.error(`执行错误: ${error}`);
-                vscode.window.showWarningMessage(`执行错误: ${error.message}`); // 显示警告消息
+                // console.error(`执行错误: ${error}`);
+                // vscode.window.showWarningMessage(`执行错误: ${error.message}`); // 显示警告消息
                 return;
             }
-            console.log(`stdout: ${stdout}`);
-            console.error(`stderr: ${stderr}`);
+            // console.log(`stdout: ${stdout}`);
+            // console.error(`stderr: ${stderr}`);
         });
 
     }
@@ -38,16 +38,16 @@ export class Ibus {
     ChangeInputToEnglish(input: string): void {        try {
             setCursorColor(this.englishCursorColor);
         } catch (error) {
-            console.error(`设置光标颜色失败: ${error}`);
+            // console.error(`设置光标颜色失败: ${error}`);
         }
         exec('/usr/bin/ibus engine xkb:us::eng', (error, stdout, stderr) => {
             if (error) {
-                console.error(`执行错误: ${error}`);
-                vscode.window.showWarningMessage(`执行错误: ${error.message}`); // 显示警告消息
+                // console.error(`执行错误: ${error}`);
+                // vscode.window.showWarningMessage(`执行错误: ${error.message}`); // 显示警告消息
                 return;
             }
-            console.log(`stdout: ${stdout}`);
-            console.error(`stderr: ${stderr}`);
+            // console.log(`stdout: ${stdout}`);
+            // console.error(`stderr: ${stderr}`);
         });
 
     }
@@ -55,7 +55,7 @@ export class Ibus {
         return new Promise((resolve, reject) => {
             exec('/usr/bin/ibus engine', (error, stdout, stderr) => {
                 if (error) {
-                    console.error(`执行错误: ${error}`);
+                    // console.error(`执行错误: ${error}`);
                     reject(error);
                     return;
                 }

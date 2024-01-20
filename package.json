@@ -1,25 +1,59 @@
 {
   "name": "smartinputlinux",
   "displayName": "SmartInputLinux",
-  "description": "为中文母语的开发者提供vsc linux下的自动切换输入法",
+  "publisher": "rn-consider",
+  "description": "为中文母语的开发者提供vsc linux下的自动切换输入法,目前只支持ibus并需要开启vim插件",
+  "repository": "https://github.com/rn-consider/smartinputlinux",
   "version": "0.0.1",
+  "extensionKind": [
+    "ui"
+  ],
   "icon": "img/icon.png",
+  "keywords": [
+    "Smart Input",
+    "Input",
+    "IM",
+    "IME",
+    "输入法",
+    "智能",
+    "keyboard",
+    "Chinese",
+    "input method",
+    "中文",
+    "中文编程"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "license": "MIT",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "smartinputlinux.helloWorld",
-        "title": "Hello World"
-      }
-    ]
-  },
+    "configuration": {
+        "title": "Vim Auto Switch Input Method",
+        "properties": {
+            "SmartInputLinux.chineseCursorColor": {
+                "type": "string",
+                "default": "#00FF00",
+                "description": "中文输入法下光标颜色"
+            },
+            "SmartInputLinux.englishCursorColor": {
+              "type": "string",
+              "default": "#FFFFFF",
+              "description": "英文输入法下光标颜色"
+            },
+            "SmartInputLinux.isWithVim": {
+              "type": "boolean",
+              "default": "true",
+              "description": "是否使用vim"
+            } 
+    }
+},
   "scripts": {
     "vscode:prepublish": "yarn run compile",
     "compile": "tsc -p ./",
@@ -39,4 +73,6 @@
     "@vscode/test-cli": "^0.0.4",
     "@vscode/test-electron": "^2.3.8"
   }
+  
+}
 }
