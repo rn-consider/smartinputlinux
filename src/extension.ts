@@ -6,8 +6,7 @@ import { Ibus } from './input/ibus';
 // Your extension is activated the very first time the command is executed
 // 检查是否处在注释中,以及开头是否为英文，如果文本为空那么返回false
 function isCommentLine(text: string): boolean {   
-    // vscode.window.showInformationMessage('当前行文本为:' + text);
-
+    // vscode.window.showInformationMessage('当前行文本为:' + text);现在就是中文
     text = text.trim(); // 获取当前行的文本，并去除前后的空白字符
     return text.startsWith('*') || text.startsWith('//') || text.startsWith('/*') || text.startsWith('#') || text.startsWith('<!--') ;
 }
@@ -24,8 +23,7 @@ function getConfiguration() {
 	// out.info('get configuration.');
 }
 export function activate(context: vscode.ExtensionContext) {
-    vscode.window.showInformationMessage('SmartIM插件已经启动!');
-    const config = vscode.workspace.getConfiguration('SmartIM');
+    const config = vscode.workspace.getConfiguration('SmartInputLinux');
     const chineseCursorColor: string = config.get('chineseCursorColor') || '#00FF00'; // 如果没有获取到配置值，则使用默认值 '#00FF00'
     const isWithVim: string = config.get('isWithVim') || 'true'; // 如果没有获取到配置值，则使用默认值 '#00FF00'
     const englishCursorColor: string = config.get('englishCursorColor') || '#FFFFFF'; // 如果没有获取到配置值，则使用默认值 '#FFFFFF'
