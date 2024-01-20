@@ -6,9 +6,8 @@ import { Ibus } from './input/ibus';
 // Your extension is activated the very first time the command is executed
 // 检查是否处在注释中,以及开头是否为英文，如果文本为空那么返回false
 function isCommentLine(text: string): boolean {   
-    // vscode.window.showInformationMessage('当前行文本为:' + text);现在就是中文
     text = text.trim(); // 获取当前行的文本，并去除前后的空白字符
-    return text.startsWith('*') || text.startsWith('//') || text.startsWith('/*') || text.startsWith('#') || text.startsWith('<!--') ;
+    return text.startsWith('*') || text.startsWith('//') || text.startsWith('/*') || text.startsWith('#') || text.startsWith('<!--') ||text.startsWith('-') ;
 }
 // 判断vim是否处在插入模式
 /**
@@ -27,6 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
     const chineseCursorColor: string = config.get('chineseCursorColor') || '#00FF00'; // 如果没有获取到配置值，则使用默认值 '#00FF00'
     const isWithVim: string = config.get('isWithVim') || 'true'; // 如果没有获取到配置值，则使用默认值 '#00FF00'
     const englishCursorColor: string = config.get('englishCursorColor') || '#FFFFFF'; // 如果没有获取到配置值，则使用默认值 '#FFFFFF'
+    const chineseInputMethod: string = config.get('chineseInputMethod') || 'pinyin'; // 如果没有获取到配置值，则使用默认值 'pinyin' 
     let ibus = new Ibus(chineseCursorColor, englishCursorColor);
     let inCommentLine = false; // 添加一个变量来跟踪当前是否在注释行中
     //  如果使用vim
@@ -48,7 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
                         inCommentLine = isNowInCommentLine; // 更新状态
                         if (inCommentLine) {
                             // vscode.window.showInformationMessage('当前光标在注释行中，切换为中文输入法!');
-                            ibus.ChangeInputToChinese('pinyin');
+                            ibus.ChangeInputToChinese(chineseInputMethod);
                         } else {
                             // vscode.window.showInformationMessage('当前光标不在注释行中!');
                             ibus.ChangeInputToEnglish('xkb:us::eng');
