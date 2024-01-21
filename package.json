@@ -4,7 +4,7 @@
   "publisher": "rn-consider",
   "description": "为中文母语的开发者提供vsc linux下的自动切换输入法,目前只支持ibus并需要开启vim插件",
   "repository": "https://github.com/rn-consider/smartinputlinux",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "extensionKind": [
     "ui"
   ],

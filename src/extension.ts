@@ -1,5 +1,5 @@
 // The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+// Import the module and reference it with the alias vscode in your code below 
 import * as vscode from 'vscode';
 import { Ibus } from './input/ibus';
 // This method is called when your extension is activated
@@ -9,9 +9,13 @@ function isCommentLine(text: string): boolean {
     text = text.trim(); // 获取当前行的文本，并去除前后的空白字符
     return text.startsWith('*') || text.startsWith('//') || text.startsWith('/*') || text.startsWith('#') || text.startsWith('<!--') ||text.startsWith('-') ;
 }
-// 判断vim是否处在插入模式
+// 检查获得的文本是否为空
+function isEmpty(text: string): boolean {
+    return text.trim().length === 0;
+}
+// 判断vim是否处在插入模式     
 /**
- * 获取配置信息。
+ * 获取配置信息。 
  * 
  * @remarks
  * 此函数用于获取 VSCode 的配置信息，包括光标样式、光标颜色、输入法设置等。
@@ -19,7 +23,7 @@ function isCommentLine(text: string): boolean {
  * @returns 无返回值。
  */
 function getConfiguration() {
-	// out.info('get configuration.');
+	// out.info('get configuration.'); 
 }
 export function activate(context: vscode.ExtensionContext) {
     const config = vscode.workspace.getConfiguration('SmartInputLinux');
@@ -32,11 +36,24 @@ export function activate(context: vscode.ExtensionContext) {
     //  如果使用vim
     if(isWithVim === 'true') { 
         context.subscriptions.push(vscode.window.onDidChangeTextEditorOptions(async (e: vscode.TextEditorOptionsChangeEvent) => {
+            // 当光标样式为1，判断当前文本是否为空如果为空那么切换为英文输入法
+            if (e.options.cursorStyle === 1) {
+                const activeEditor = vscode.window.activeTextEditor;
+                if (activeEditor) {
+                    const line = activeEditor.selection.active.line;
+                    const text = activeEditor.document.lineAt(line).text;
+                    if (isEmpty(text)) {
+                        ibus.ChangeInputToEnglish('xkb:us::eng'); // 设置英文输入法
+                        ibus.SetEnglishCursorColor(); // 设置光标颜色
+                    }
+                }
+            }
             if (e.options.cursorStyle === 2) {
+                ibus.ChangeInputToEnglish('xkb:us::eng'); // 设置英文输入法
                 ibus.SetEnglishCursorColor(); // 设置光标颜色
             }
         }));
-        // 逻辑就是监听光标移动事件
+        // 逻辑就是监听光标移动事件^_^
         // 当光标移动到注释行中时，如果现在的样式为1，也就是Vim插入模式下光标样式则切换为中文输入法
         context.subscriptions.push(
             vscode.window.onDidChangeTextEditorSelection(async (event) => {

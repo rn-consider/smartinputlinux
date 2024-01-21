@@ -1,0 +1,16 @@
+# 输入应当为中文应当中文输入的撒旦着哦功能文 现在是中文a 
+// 现在是中文
+now i am english
+# 现在有百年成中文
+s
+# 现在是中文
+now i am english
+asdad
+dasd
+# 输入为中文
+while this like english
+
+# 简单的加上个注释
+fuc main(){
+
+}
